@@ -38,7 +38,7 @@ start_all_patches(patches)
 target_index = 0
 position = 1
 t = 0
-traj = [0, 0.5, 1, 0.5]
+traj = [-0.5, 0.5, 1, 0.5]
 prev_position = 0
 
 print 'Waiting for CTRL+C to be pressed'
@@ -53,30 +53,45 @@ if 'sma-infrared' in patches:
 if 'visitor' in patches:
 	visitor = patches['visitor']
 
+idle_time = 4
+start_time = time.time()
+
 try:
 	while True:
+		# time.sleep(0.1)
+		# t = t + 1
+
+		# if num_sma_patches > 0:
+		# sma_index = random.randint(0, num_sma_patches - 1 )
+		sma_trigger_id = []
+		for sma_id in sma_patches:
+			ir_out = sma_patches[sma_id].get_block_output('IRSensor_1', 'ir')
+			print str(sma_id) + ':' + str(ir_out.value)
+			if ir_out.value == 1:
+				sma_trigger_id.append(sma_id)
+
+		print '*************'
+
+		if len(sma_trigger_id) == 0 and time.time()-start_time >= idle_time:
+			# Idle state
+			state = 0
+		elif len(sma_trigger_id) > 0:
+			# Active state
+			# activate blocks
+			state = 1
+			
+		sma_patch_index = 0
+		p = sma_patches['sma-ir1']
+
 		time.sleep(0.1)
-		t = t + 1
 
-		if num_sma_patches > 0:
-			# sma_index = random.randint(0, num_sma_patches - 1 )
-			sma_patch_index = 0
-			p = sma_patches['sma-ir1']
-			prev_position = movement(t, traj, p, prev_position)
-			time.sleep(0.1)
-			for sma in sma_patches:
-				ir_out = sma_patches[sma].get_block_output('IRSensor_1', 'ir')
-				print str(sma) + ':' + str(ir_out.value)
-			print '*************'
-			sma_index = 1
-			target = random.uniform(-3.14, 3.14)
-			p.set_block_parameter('sma_control_' + str(sma_index), 'value', eyesweb_mobile.double_parameter(target))
+		sma_index = 1
+		target = random.uniform(-3.14, 3.14)
+		p.set_block_parameter('sma_control_' + str(sma_index), 'value', eyesweb_mobile.double_parameter(target))
 
-		# target = random.uniform(-3.14, 3.14 )
-		# position = 1-position
+		# visitor moves
+		#prev_position = movement(t, traj, visitor, prev_position)
 
-		# print 'Setting target for sma ' + str(sma_index) + ' to ' + str( target )
-		# p.set_block_parameter( 'sma_control', 'value', eyesweb_mobile.double_parameter(target) )
 except KeyboardInterrupt:
 	pass
 
