@@ -1,0 +1,7 @@
+# SMA + infrared,,,,
+sma-ir1, sma-infrared,0,0,0
+sma-ir2, sma-infrared,0.5,0,0
+sma-ir3, sma-infrared,1,0,0
+sma-ir4, sma-infrared,0,1,0
+sma-ir5, sma-infrared,0.5,1,0
+sma-ir6, sma-infrared,1,1,0
